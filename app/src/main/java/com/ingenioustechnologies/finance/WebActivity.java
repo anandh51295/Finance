@@ -174,8 +174,10 @@ public class WebActivity extends AppCompatActivity implements ConnectivityReceiv
     public void onNetworkConnectionChanged(boolean isConnected) {
         if (isConnected) {
             nosignal.setVisibility(View.INVISIBLE);
+            wv_webview.setVisibility(View.VISIBLE);
         } else {
             nosignal.setVisibility(View.VISIBLE);
+            wv_webview.setVisibility(View.GONE);
             Toast.makeText(getApplicationContext(), "Check Internet Connection", Toast.LENGTH_LONG).show();
         }
     }

@@ -18,7 +18,7 @@ import java.util.Calendar;
 public class ReportActivity extends AppCompatActivity {
 
     Spinner spinner;
-    TextView sdate,edate;
+    TextView sdate,edate,heading;
     Button btn;
     String username;
     int userid;
@@ -40,6 +40,7 @@ public class ReportActivity extends AppCompatActivity {
         sdate=findViewById(R.id.start_txt);
         edate=findViewById(R.id.end_txt);
         btn=findViewById(R.id.s_btn);
+        heading=findViewById(R.id.r_head);
         uname=new ArrayList<>();
         uname.add("all");
         uname.add("UserTracking");
