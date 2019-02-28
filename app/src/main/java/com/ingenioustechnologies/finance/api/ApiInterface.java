@@ -20,9 +20,12 @@ public interface ApiInterface {
     @GET("tracker")
     Call<TrackRes> performtrack(@Query("userid") int userid, @Query("latitude") double latitude,@Query("longitude") double longitude);
 
+    @GET("userverify")
+    Call<TrackRes> performverify(@Query("userid") int userid,@Query("latitude") double latitude,@Query("longtitude") double longtitude);
+
     @GET("userlist")
     Call<UserRes>performalluser();
 
     @GET("usertracker")
-    Call<LocRes> performlocation(@Query("userid") int userid);
+    Call<LocRes> performlocation(@Query("userid") int userid,@Query("type") String type,@Query("sdate") String sdate,@Query("edate") String edate);
 }

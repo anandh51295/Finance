@@ -11,4 +11,26 @@
     android:id="@+id/usrlist">
 
 </android.support.v7.widget.RecyclerView>
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/user_mainload"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        app:lottie_autoPlay="true"
+        app:lottie_fileName="load.json"
+        android:layout_centerInParent="true"
+        app:lottie_imageAssetsFolder="assets"
+        app:lottie_loop="true" />
+
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/user_mainnosignal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        app:lottie_autoPlay="true"
+        app:lottie_fileName="nosignal.json"
+        android:layout_centerInParent="true"
+        app:lottie_imageAssetsFolder="assets"
+        app:lottie_loop="true" />
 </android.support.constraint.ConstraintLayout>

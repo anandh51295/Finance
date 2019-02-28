@@ -8,8 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.ingenioustechnologies.finance.MapsActivity;
 import com.ingenioustechnologies.finance.R;
+import com.ingenioustechnologies.finance.ReportActivity;
 import com.ingenioustechnologies.finance.model.UserVal;
 
 import java.util.ArrayList;
@@ -47,7 +47,7 @@ public class UserAdopter extends RecyclerView.Adapter<UserAdopter.ViewHolder> {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(v.getContext(), MapsActivity.class);
+                    Intent intent = new Intent(v.getContext(), ReportActivity.class);
                     intent.putExtra("username",userVals.get(getLayoutPosition()).getUsername());
                     intent.putExtra("userid",userVals.get(getLayoutPosition()).getUserid());
                     v.getContext().startActivity(intent);

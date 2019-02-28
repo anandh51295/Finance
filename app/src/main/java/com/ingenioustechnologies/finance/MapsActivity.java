@@ -24,7 +24,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private GoogleMap mMap;
     public static ApiInterface apiInterface;
-    String username;
+    String username, sdate, edate, type;
     int userid;
 
     @Override
@@ -36,6 +36,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Intent intent = getIntent();
             username = intent.getStringExtra("username");
             userid = intent.getIntExtra("userid", 0);
+            sdate = intent.getStringExtra("sdate");
+            edate = intent.getStringExtra("edate");
+            type = intent.getStringExtra("type");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -68,27 +71,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void getlocations(int userid) {
 
-        Call<LocRes> call = apiInterface.performlocation(userid);
+        Call<LocRes> call = apiInterface.performlocation(userid, type, sdate, edate);
         call.enqueue(new Callback<LocRes>() {
             @Override
             public void onResponse(Call<LocRes> call, Response<LocRes> response) {
                 if (response.isSuccessful()) {
-                    if(!response.body().getResponse().isEmpty()){
-                        int rsize=response.body().getResponse().size();
-                        for(int k=0;k<rsize;k++){
-                            LatLng sydney = new LatLng(Double.parseDouble(response.body().getResponse().get(k).getLatitude()),Double.parseDouble(response.body().getResponse().get(k).getLongitude()));
+                    if (!response.body().getResponse().isEmpty()) {
+                        int rsize = response.body().getResponse().size();
+
+                        LatLng erode = new LatLng(11.341000, 77.717200);
+                        for (int k = 0; k < rsize; k++) {
+                            LatLng sydney = new LatLng(Double.parseDouble(response.body().getResponse().get(k).getLatitude()), Double.parseDouble(response.body().getResponse().get(k).getLongitude()));
                             mMap.addMarker(new MarkerOptions().position(sydney).title(response.body().getResponse().get(k).getDate()));
-                            if(k==rsize-1){
-                            mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-                            }
+//                            if(k==rsize-1){
+//                            mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+//                            }
+                            mMap.moveCamera(CameraUpdateFactory.newLatLng(erode));
                         }
-                    }else{
-                        Toast.makeText(getApplicationContext(),"No Data Found",Toast.LENGTH_LONG).show();
-                        Log.d("get locations","response empty");
+                    } else {
+                        Toast.makeText(getApplicationContext(), "No Data Found", Toast.LENGTH_LONG).show();
+                        Log.d("get locations", "response empty");
                     }
                 } else {
-                    Log.d("get locations","no response");
-                    Toast.makeText(getApplicationContext(),"Check Your Internet Connection or Try Again",Toast.LENGTH_LONG).show();
+                    Log.d("get locations", "no response");
+                    Toast.makeText(getApplicationContext(), "Check Your Internet Connection or Try Again", Toast.LENGTH_LONG).show();
                 }
             }
 
