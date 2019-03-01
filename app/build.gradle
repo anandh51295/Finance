@@ -4,7 +4,7 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.ingenioustechnologies.finance"
-        minSdkVersion 23
+        minSdkVersion 15
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
@@ -37,6 +37,6 @@ dependencies {
     implementation 'com.github.safetysystemtechnology:location-tracker-background:v1.4'
     implementation 'pub.devrel:easypermissions:2.0.1'
     implementation 'com.google.maps.android:android-maps-utils:0.5+'
-
-    implementation 'com.kevalpatel2106:fingerprint-dialog-compat:1.0'
+    // for finerprint support
+//    implementation 'com.kevalpatel2106:fingerprint-dialog-compat:1.0'
 }

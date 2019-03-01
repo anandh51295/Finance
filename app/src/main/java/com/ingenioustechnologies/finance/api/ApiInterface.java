@@ -21,7 +21,7 @@ public interface ApiInterface {
     Call<TrackRes> performtrack(@Query("userid") int userid, @Query("latitude") double latitude,@Query("longitude") double longitude);
 
     @GET("userverify")
-    Call<TrackRes> performverify(@Query("userid") int userid,@Query("latitude") double latitude,@Query("longtitude") double longtitude);
+    Call<TrackRes> performverify(@Query("userid") int userid,@Query("cname")String cname,@Query("latitude") double latitude,@Query("longtitude") double longtitude);
 
     @GET("userlist")
     Call<UserRes>performalluser();

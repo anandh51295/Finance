@@ -3,6 +3,7 @@ package com.ingenioustechnologies.finance;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -34,6 +35,7 @@ public class LoginActivity extends AppCompatActivity {
     public static final String PWD = "passwordKey";
     public static final String Uid = "useridKey";
     public static final String Userrole = "userroleKey";
+    public static final String Vkey = "versionKey";
     public static final String mypreference = "financesharedpref";
 
     @Override
@@ -120,10 +122,16 @@ public class LoginActivity extends AppCompatActivity {
 
     public void save(String username, String password, int id, String role) {
         SharedPreferences.Editor editor = sharedpreferences.edit();
+        if (Build.VERSION.SDK_INT >= 23) {
+            editor.putString(Vkey,"yes");
+        } else {
+            editor.putString(Vkey,"no");
+        }
         editor.putString(Name, username);
         editor.putString(PWD, password);
         editor.putInt(Uid, id);
         editor.putString(Userrole, role);
         editor.commit();
     }
+
 }

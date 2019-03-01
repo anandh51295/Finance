@@ -1,28 +1,27 @@
 package com.ingenioustechnologies.finance;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.ingenioustechnologies.finance.api.ApiClient;
 import com.ingenioustechnologies.finance.api.ApiInterface;
 import com.ingenioustechnologies.finance.model.TrackRes;
-import com.kevalpatel2106.fingerprintdialog.AuthenticationCallback;
-import com.kevalpatel2106.fingerprintdialog.FingerprintDialogBuilder;
 
 import br.com.safety.locationlistenerhelper.core.CurrentLocationListener;
 import br.com.safety.locationlistenerhelper.core.CurrentLocationReceiver;
@@ -38,12 +37,13 @@ public class WebActivity extends AppCompatActivity implements ConnectivityReceiv
     public static final String PWD = "passwordKey";
     public static final String Uid = "useridKey";
     public static final String Userrole = "userroleKey";
+    public static final String Vkey = "versionKey";
     public static final String mypreference = "financesharedpref";
     int once = 0;
-    String m2, username, password, url;
+    String m2, username, password, url,muserid;
     LottieAnimationView load, nosignal;
     WebView wv_webview;
-    FingerprintDialogBuilder dialogBuilder;
+//    FingerprintDialogBuilder dialogBuilder;
     LocationTracker locationTracker;
     public static ApiInterface apiInterface;
 
@@ -85,7 +85,10 @@ public class WebActivity extends AppCompatActivity implements ConnectivityReceiv
                         "document.getElementsByClassName('main-sidebar')[0].style.display='none'; " +
                         "document.getElementsByClassName('sidebar-toggle')[0].style.display='none';" +
                         "document.getElementsByClassName('logo')[0].style.display='none'; " +
-                        "document.getElementsByClassName('logout')[0].style.display='none';})()");
+                        "document.getElementsByClassName('logout')[0].style.display='none';" +
+                        "document.getElementById('exportBorrowers').style.display='none';" +
+                        "document.getElementById('exportLoans').style.display='none';" +
+                        "document.getElementById('exportDueReport').style.display='none';})()");
 
 //                Button btnLogin=new Button(getApplicationContext());
 //                wv_webview.addJavascriptInterface(btnLogin,"login");
@@ -99,12 +102,21 @@ public class WebActivity extends AppCompatActivity implements ConnectivityReceiv
 
                 wv_webview.addJavascriptInterface(new Object() {
                     @JavascriptInterface
-                    public void performClick() throws Exception //method which you call on button click on HTML page
+                    public void performClick(String wuserid) throws Exception //method which you call on button click on HTML page
                     {
                         Log.d("LOGIN::", "Clicked");
-                        if (sharedpreferences.getString(Userrole, null).equals("user")) {
-                            checkfinger();
-                        }
+                        Log.d("username",wuserid);
+                        muserid=wuserid;
+//                        if(sharedpreferences.getString(Vkey,null).equals("yes")){
+//                            if (sharedpreferences.getString(Userrole, null).equals("user")) {
+//                                checkfinger();
+//                            }
+//                        }else{
+                            if (sharedpreferences.getString(Userrole, null).equals("user")) {
+                                checkdisplay();
+                            }
+//                        }
+
 //                        Toast.makeText(getApplicationContext(), "Login clicked", Toast.LENGTH_LONG).show();
                     }
                 }, "btnLogin");
@@ -143,21 +155,60 @@ public class WebActivity extends AppCompatActivity implements ConnectivityReceiv
         }
 
     }
+//todo for real finger print auth but not here
+//    public void checkfinger() {
+//        try {
+//            dialogBuilder = new FingerprintDialogBuilder(WebActivity.this)
+//                    .setTitle("Verification")
+//                    .setSubtitle("Verify Customer Address")
+//                    .setDescription("Customer Address Verification")
+//                    .setNegativeButton("Cancel");
+//            FragmentManager fm = getSupportFragmentManager();
+//            dialogBuilder.show(fm, callback);
+//
+//
+//        } catch (Exception m) {
+//            m.printStackTrace();
+//        }
+//    }
+    public void checkdisplay(){
+        final AlertDialog alertDialog = new AlertDialog.Builder(WebActivity.this).setTitle("Verification").create();
 
-    public void checkfinger() {
-        try {
-            dialogBuilder = new FingerprintDialogBuilder(WebActivity.this)
-                    .setTitle("Verification")
-                    .setSubtitle("Verify Customer Address")
-                    .setDescription("Customer Address Verification")
-                    .setNegativeButton("Cancel");
-            FragmentManager fm = getSupportFragmentManager();
-            dialogBuilder.show(fm, callback);
+        alertDialog.show();
+        Window win = alertDialog.getWindow();
+        win.setContentView(R.layout.new_layout);
 
+        //Game
+        ImageButton game_btn = (ImageButton)win.findViewById(R.id.finger);
+        game_btn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getApplicationContext(),"Customer Verified",Toast.LENGTH_LONG).show();
+                alertDialog.dismiss();
+                verify();
 
-        } catch (Exception m) {
-            m.printStackTrace();
-        }
+            }
+        });
+
+//        //Browser
+//        ImageButton browser_btn = (ImageButton)win.findViewById(R.id.browser);
+//        browser_btn.setOnClickListener(new OnClickListener(){
+//            @Override
+//            public void onClick(View v) {
+//                // TODO Auto-generated method stub
+//
+//            }
+//        });
+//
+//        //Email
+//        ImageButton email_btn = (ImageButton)win.findViewById(R.id.email);
+//        email_btn.setOnClickListener(new OnClickListener(){
+//            @Override
+//            public void onClick(View v) {
+//                // TODO Auto-generated method stub
+//
+//            }
+//        });
     }
 
 
@@ -181,8 +232,8 @@ public class WebActivity extends AppCompatActivity implements ConnectivityReceiv
             Toast.makeText(getApplicationContext(), "Check Internet Connection", Toast.LENGTH_LONG).show();
         }
     }
-
-    final AuthenticationCallback callback = new AuthenticationCallback() {
+//todo need to change min sdk to 20 for work with fingerprint
+    /*final AuthenticationCallback callback = new AuthenticationCallback() {
         @Override
         public void fingerprintAuthenticationNotSupported() {
             // Device doesn't support fingerprint authentication. May be device doesn't have fingerprint hardware or device is running on Android below Marshmallow.
@@ -250,7 +301,7 @@ public class WebActivity extends AppCompatActivity implements ConnectivityReceiv
             // Authentication failed.
             // Library will continue scanning the fingerprint after this callback.
         }
-    };
+    };*/
 
     public void verify() {
         locationTracker = new LocationTracker("my.action")
@@ -281,7 +332,7 @@ public class WebActivity extends AppCompatActivity implements ConnectivityReceiv
     }
 
     public void dowork(double lat, double lon) {
-        Call<TrackRes> call = apiInterface.performverify(sharedpreferences.getInt(Uid, 0), lat, lon);
+        Call<TrackRes> call = apiInterface.performverify(sharedpreferences.getInt(Uid, 0),muserid, lat, lon);
         call.enqueue(new Callback<TrackRes>() {
             @Override
             public void onResponse(Call<TrackRes> call, Response<TrackRes> response) {
