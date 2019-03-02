@@ -1,5 +1,7 @@
 package com.ingenioustechnologies.finance.api;
 
+import com.ingenioustechnologies.finance.model.CheckRes;
+import com.ingenioustechnologies.finance.model.CustomerRes;
 import com.ingenioustechnologies.finance.model.LocRes;
 import com.ingenioustechnologies.finance.model.LoginRes;
 import com.ingenioustechnologies.finance.model.TrackRes;
@@ -25,6 +27,12 @@ public interface ApiInterface {
 
     @GET("userlist")
     Call<UserRes>performalluser();
+
+    @GET("verifylist")
+    Call<CustomerRes>performallverifyuser();
+
+    @GET("checklist")
+    Call<CheckRes>performcheck(@Query("type")String type, @Query("val")String val);
 
     @GET("usertracker")
     Call<LocRes> performlocation(@Query("userid") int userid,@Query("type") String type,@Query("sdate") String sdate,@Query("edate") String edate);

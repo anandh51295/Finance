@@ -19,7 +19,7 @@ import br.com.safety.locationlistenerhelper.core.LocationTracker;
 
 public class MainActivity extends AppCompatActivity {
 
-    CardView cardView1, cardView2, cardView3, cardView4, cardView5, cardView6, cardView7;
+    CardView cardView1, cardView2, cardView3, cardView4, cardView5, cardView6, cardView7,cardView8;
     TextView textView;
     String username, password;
     SharedPreferences sharedpreferences;
@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         cardView5 = findViewById(R.id.vduescard);
         cardView6 = findViewById(R.id.usercard);
         cardView7 = findViewById(R.id.ucard);
-
+        cardView8=findViewById(R.id.ccard);
         textView = findViewById(R.id.welcometxt);
 
 
@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
         if (sharedpreferences.getString(Userrole, null).equals("user")) {
             cardView6.setVisibility(View.GONE);
             cardView7.setVisibility(View.GONE);
+            cardView8.setVisibility(View.GONE);
         }
         cardView1.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -148,6 +149,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, UserlocActivity.class);
+                startActivity(intent);
+            }
+        });
+        cardView8.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(MainActivity.this,FinduserActivity.class);
                 startActivity(intent);
             }
         });
