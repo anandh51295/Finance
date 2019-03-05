@@ -1,18 +1,30 @@
 package com.ingenioustechnologies.finance;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.location.Location;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.webkit.JavascriptInterface;
+import android.webkit.ValueCallback;
+import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageButton;
@@ -22,6 +34,11 @@ import com.airbnb.lottie.LottieAnimationView;
 import com.ingenioustechnologies.finance.api.ApiClient;
 import com.ingenioustechnologies.finance.api.ApiInterface;
 import com.ingenioustechnologies.finance.model.TrackRes;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import br.com.safety.locationlistenerhelper.core.CurrentLocationListener;
 import br.com.safety.locationlistenerhelper.core.CurrentLocationReceiver;
@@ -47,6 +64,15 @@ public class WebActivity extends AppCompatActivity implements ConnectivityReceiv
     LocationTracker locationTracker;
     public static ApiInterface apiInterface;
 
+
+    private String mCM;
+    private ValueCallback<Uri> mUM;
+    private ValueCallback<Uri[]> mUMA;
+    private final static int FCR=1;
+
+    //select whether you want to upload multiple files (set 'true' for yes)
+    private boolean multiple_files = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,10 +93,106 @@ public class WebActivity extends AppCompatActivity implements ConnectivityReceiv
         m2 = "http://projecting.ingenious-technologies.com/finance_app/" + url;
         wv_webview = (WebView) findViewById(R.id.appview);
         wv_webview.getSettings().setJavaScriptEnabled(true);
+        WebSettings webSettings = wv_webview.getSettings();
+
+        webSettings.setAllowFileAccess(true);
+
+        if(Build.VERSION.SDK_INT >= 21){
+            webSettings.setMixedContentMode(0);
+            wv_webview.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        }else if(Build.VERSION.SDK_INT >= 19){
+            wv_webview.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        }else {
+            wv_webview.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        }
+//        wv_webview.setWebViewClient(new Callback());
+        wv_webview.setWebChromeClient(new WebChromeClient() {
+            /*
+             * openFileChooser is not a public Android API and has never been part of the SDK.
+             */
+            //handling input[type="file"] requests for android API 16+
+            @SuppressLint("ObsoleteSdkInt")
+            @SuppressWarnings("unused")
+            public void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType, String capture) {
+                mUM = uploadMsg;
+                Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+                i.addCategory(Intent.CATEGORY_OPENABLE);
+                i.setType("*/*");
+                if (multiple_files && Build.VERSION.SDK_INT >= 18) {
+                    i.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                }
+                startActivityForResult(Intent.createChooser(i, "File Chooser"), FCR);
+            }
+
+            //handling input[type="file"] requests for android API 21+
+            @SuppressLint("InlinedApi")
+            public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback, FileChooserParams fileChooserParams) {
+                if (file_permission()) {
+                    String[] perms = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA};
+
+                    //checking for storage permission to write images for upload
+                    if (ContextCompat.checkSelfPermission(WebActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(WebActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(WebActivity.this, perms, FCR);
+
+                        //checking for WRITE_EXTERNAL_STORAGE permission
+                    } else if (ContextCompat.checkSelfPermission(WebActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(WebActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, FCR);
+
+                        //checking for CAMERA permissions
+                    } else if (ContextCompat.checkSelfPermission(WebActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(WebActivity.this, new String[]{Manifest.permission.CAMERA}, FCR);
+                    }
+                    if (mUMA != null) {
+                        mUMA.onReceiveValue(null);
+                    }
+                    mUMA = filePathCallback;
+                    Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    if (takePictureIntent.resolveActivity(WebActivity.this.getPackageManager()) != null) {
+                        File photoFile = null;
+                        try {
+                            photoFile = createImageFile();
+                            takePictureIntent.putExtra("PhotoPath", mCM);
+                        } catch (IOException ex) {
+                            Log.e("check", "Image file creation failed", ex);
+                        }
+                        if (photoFile != null) {
+                            mCM = "file:" + photoFile.getAbsolutePath();
+                            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
+                        } else {
+                            takePictureIntent = null;
+                        }
+                    }
+                    Intent contentSelectionIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                    contentSelectionIntent.addCategory(Intent.CATEGORY_OPENABLE);
+                    contentSelectionIntent.setType("*/*");
+                    if (multiple_files) {
+                        contentSelectionIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                    }
+                    Intent[] intentArray;
+                    if (takePictureIntent != null) {
+                        intentArray = new Intent[]{takePictureIntent};
+                    } else {
+                        intentArray = new Intent[0];
+                    }
+
+                    Intent chooserIntent = new Intent(Intent.ACTION_CHOOSER);
+                    chooserIntent.putExtra(Intent.EXTRA_INTENT, contentSelectionIntent);
+                    chooserIntent.putExtra(Intent.EXTRA_TITLE, "File Chooser");
+                    chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, intentArray);
+                    startActivityForResult(chooserIntent, FCR);
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+        });
         wv_webview.setWebViewClient(new WebViewClient() {
 //            public boolean shouldOverrideUrlLoading(WebView view, String url) {
 //                return true;
 //            }
+
+
+
 
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
@@ -138,6 +260,9 @@ public class WebActivity extends AppCompatActivity implements ConnectivityReceiv
                 }
 
             }
+
+
+
         });
         //wv_webview.setWebViewClient(new WebViewClient());
 //        String newUA= "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.4) Gecko/20100101 Firefox/4.0";
@@ -154,6 +279,52 @@ public class WebActivity extends AppCompatActivity implements ConnectivityReceiv
             Toast.makeText(getApplicationContext(), "try again later", Toast.LENGTH_LONG).show();
         }
 
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent){
+        super.onActivityResult(requestCode, resultCode, intent);
+        if(Build.VERSION.SDK_INT >= 21){
+            Uri[] results = null;
+            //checking if response is positive
+            if(resultCode== Activity.RESULT_OK){
+                if(requestCode == FCR){
+                    if(null == mUMA){
+                        return;
+                    }
+                    if(intent == null || intent.getData() == null){
+                        if(mCM != null){
+                            results = new Uri[]{Uri.parse(mCM)};
+                        }
+                    }else{
+                        String dataString = intent.getDataString();
+                        if(dataString != null){
+                            results = new Uri[]{Uri.parse(dataString)};
+                        } else {
+                            if(multiple_files) {
+                                if (intent.getClipData() != null) {
+                                    final int numSelectedFiles = intent.getClipData().getItemCount();
+                                    results = new Uri[numSelectedFiles];
+                                    for (int i = 0; i < numSelectedFiles; i++) {
+                                        results[i] = intent.getClipData().getItemAt(i).getUri();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            mUMA.onReceiveValue(results);
+            mUMA = null;
+        }else{
+            if(requestCode == FCR){
+                if(null == mUM) return;
+                Uri result = intent == null || resultCode != RESULT_OK ? null : intent.getData();
+                mUM.onReceiveValue(result);
+                mUM = null;
+            }
+        }
     }
 //todo for real finger print auth but not here
 //    public void checkfinger() {
@@ -359,4 +530,20 @@ public class WebActivity extends AppCompatActivity implements ConnectivityReceiv
         });
     }
 
+    //creating new image file here
+    private File createImageFile() throws IOException{
+        @SuppressLint("SimpleDateFormat") String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "img_"+timeStamp+"_";
+        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        return File.createTempFile(imageFileName,".jpg",storageDir);
+    }
+
+    public boolean file_permission(){
+        if(Build.VERSION.SDK_INT >=23 && (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)) {
+            ActivityCompat.requestPermissions(WebActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA}, 1);
+            return false;
+        }else{
+            return true;
+        }
+    }
 }
