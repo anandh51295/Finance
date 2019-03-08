@@ -19,7 +19,7 @@ import br.com.safety.locationlistenerhelper.core.LocationTracker;
 
 public class MainActivity extends AppCompatActivity {
 
-    CardView cardView1, cardView2, cardView3, cardView4, cardView5, cardView6, cardView7,cardView8;
+    CardView cardView1, cardView2, cardView3, cardView4, cardView5, cardView6, cardView7,cardView8,cardView9,cardView10,cardView11;
     TextView textView;
     String username, password;
     SharedPreferences sharedpreferences;
@@ -48,6 +48,9 @@ public class MainActivity extends AppCompatActivity {
         cardView7 = findViewById(R.id.ucard);
         cardView8=findViewById(R.id.ccard);
         textView = findViewById(R.id.welcometxt);
+        cardView9=findViewById(R.id.ndeletecard);
+        cardView10=findViewById(R.id.nloancard);
+        cardView11=findViewById(R.id.weekdue);
 
 
         if (sharedpreferences.contains(Name) && sharedpreferences.contains(PWD) && sharedpreferences.contains(Uid) && sharedpreferences.contains(Userrole)) {
@@ -65,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
             cardView6.setVisibility(View.GONE);
             cardView7.setVisibility(View.GONE);
             cardView8.setVisibility(View.GONE);
+            cardView10.setVisibility(View.GONE);
         }
         cardView1.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -160,6 +164,43 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        cardView10.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, WebActivity.class);
+                if (!username.isEmpty()) {
+                    intent.putExtra("username", username);
+                    intent.putExtra("password", password);
+                    intent.putExtra("url", "delete");
+                }
+                startActivity(intent);
+            }
+        });
+
+        cardView9.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, WebActivity.class);
+                if (!username.isEmpty()) {
+                    intent.putExtra("username", username);
+                    intent.putExtra("password", password);
+                    intent.putExtra("url", "dues2");
+                }
+                startActivity(intent);
+            }
+        });
+        cardView11.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, WebActivity.class);
+                if (!username.isEmpty()) {
+                    intent.putExtra("username", username);
+                    intent.putExtra("password", password);
+                    intent.putExtra("url", "loans2");
+                }
+                startActivity(intent);
+            }
+        });
 
     }
 
