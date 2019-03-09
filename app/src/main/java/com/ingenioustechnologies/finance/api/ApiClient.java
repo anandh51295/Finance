@@ -8,7 +8,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiClient {
 
-    public static final String BASE_URL = "http://projecting.ingenious-technologies.com/finance_app/";
+    public static final String BASE_URL = "http://finance.ingenious-technologies.com/";
     public static Retrofit retrofit = null;
 
     public static Retrofit getApiClient() {

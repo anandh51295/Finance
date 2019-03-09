@@ -143,7 +143,7 @@
         <LinearLayout
             android:id="@+id/linearLayout5"
             android:layout_width="match_parent"
-            android:layout_height="217dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:clipToPadding="false"
             android:gravity="center"
@@ -249,11 +249,14 @@
         <LinearLayout
             android:id="@+id/linearLayout2"
             android:layout_width="match_parent"
-            android:layout_height="217dp"
+            android:layout_height="wrap_content"
             android:clipToPadding="false"
             android:gravity="center"
             android:orientation="horizontal"
             android:visibility="visible"
+            app:layout_constraintBottom_toTopOf="@+id/ulinearLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout5">
 
             <android.support.v7.widget.CardView
@@ -359,14 +362,14 @@
             android:id="@+id/ulinearLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
             android:background="#fcfcfc"
             android:orientation="vertical"
             android:padding="10dp"
             app:layout_constraintBottom_toTopOf="@+id/newLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
+            app:layout_constraintStart_toStartOf="parent">
 
 
             <LinearLayout
@@ -471,8 +474,8 @@
         <LinearLayout
             android:id="@+id/newLayout"
             android:layout_width="match_parent"
-            android:layout_height="227dp"
-            android:layout_marginBottom="1dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
             android:background="#fcfcfc"
             android:orientation="vertical"
             android:padding="10dp"
@@ -584,7 +587,7 @@
         <LinearLayout
             android:id="@+id/mLayout"
             android:layout_width="match_parent"
-            android:layout_height="227dp"
+            android:layout_height="wrap_content"
             android:background="#fcfcfc"
             android:orientation="vertical"
             android:padding="10dp"

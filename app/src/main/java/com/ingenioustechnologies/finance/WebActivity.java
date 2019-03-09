@@ -59,10 +59,10 @@ public class WebActivity extends AppCompatActivity implements ConnectivityReceiv
     public static final String Vkey = "versionKey";
     public static final String mypreference = "financesharedpref";
     int once = 0;
-    String m2, username, password, url,muserid;
+    String m2, username, password, url, muserid;
     LottieAnimationView load, nosignal;
     WebView wv_webview;
-//    FingerprintDialogBuilder dialogBuilder;
+    //    FingerprintDialogBuilder dialogBuilder;
     LocationTracker locationTracker;
     public static ApiInterface apiInterface;
 
@@ -70,7 +70,7 @@ public class WebActivity extends AppCompatActivity implements ConnectivityReceiv
     private String mCM;
     private ValueCallback<Uri> mUM;
     private ValueCallback<Uri[]> mUMA;
-    private final static int FCR=1;
+    private final static int FCR = 1;
 
     //select whether you want to upload multiple files (set 'true' for yes)
     private boolean multiple_files = false;
@@ -92,19 +92,19 @@ public class WebActivity extends AppCompatActivity implements ConnectivityReceiv
         nosignal = findViewById(R.id.f_mainnosignal);
         load.setVisibility(View.VISIBLE);
 
-        m2 = "http://projecting.ingenious-technologies.com/finance_app/" + url;
+        m2 = "http://finance.ingenious-technologies.com/" + url;
         wv_webview = (WebView) findViewById(R.id.appview);
         wv_webview.getSettings().setJavaScriptEnabled(true);
         WebSettings webSettings = wv_webview.getSettings();
 
         webSettings.setAllowFileAccess(true);
 
-        if(Build.VERSION.SDK_INT >= 21){
+        if (Build.VERSION.SDK_INT >= 21) {
             webSettings.setMixedContentMode(0);
             wv_webview.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-        }else if(Build.VERSION.SDK_INT >= 19){
+        } else if (Build.VERSION.SDK_INT >= 19) {
             wv_webview.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-        }else {
+        } else {
             wv_webview.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         }
 //        wv_webview.setWebViewClient(new Callback());
@@ -183,7 +183,7 @@ public class WebActivity extends AppCompatActivity implements ConnectivityReceiv
                     chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, intentArray);
                     startActivityForResult(chooserIntent, FCR);
                     return true;
-                }else{
+                } else {
                     return false;
                 }
             }
@@ -192,8 +192,6 @@ public class WebActivity extends AppCompatActivity implements ConnectivityReceiv
 //            public boolean shouldOverrideUrlLoading(WebView view, String url) {
 //                return true;
 //            }
-
-
 
 
             @Override
@@ -210,6 +208,7 @@ public class WebActivity extends AppCompatActivity implements ConnectivityReceiv
                         "document.getElementsByClassName('sidebar-toggle')[0].style.display='none';" +
                         "document.getElementsByClassName('logo')[0].style.display='none'; " +
                         "document.getElementsByClassName('logout')[0].style.display='none';" +
+                        "document.getElementsByClassName('fexport')[0].style.display='none';" +
                         "document.getElementById('exportBorrowers').style.display='none';" +
                         "document.getElementById('exportLoans').style.display='none';" +
                         "document.getElementById('exportDueReport').style.display='none';})()");
@@ -229,16 +228,16 @@ public class WebActivity extends AppCompatActivity implements ConnectivityReceiv
                     public void performClick(String wuserid) throws Exception //method which you call on button click on HTML page
                     {
                         Log.d("LOGIN::", "Clicked");
-                        Log.d("username",wuserid);
-                        muserid=wuserid;
+                        Log.d("username", wuserid);
+                        muserid = wuserid;
 //                        if(sharedpreferences.getString(Vkey,null).equals("yes")){
 //                            if (sharedpreferences.getString(Userrole, null).equals("user")) {
 //                                checkfinger();
 //                            }
 //                        }else{
-                            if (sharedpreferences.getString(Userrole, null).equals("user")) {
-                                checkdisplay();
-                            }
+                        if (sharedpreferences.getString(Userrole, null).equals("user")) {
+                            checkdisplay();
+                        }
 //                        }
 
 //                        Toast.makeText(getApplicationContext(), "Login clicked", Toast.LENGTH_LONG).show();
@@ -264,12 +263,11 @@ public class WebActivity extends AppCompatActivity implements ConnectivityReceiv
             }
 
 
-
         });
         //wv_webview.setWebViewClient(new WebViewClient());
 //        String newUA= "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.4) Gecko/20100101 Firefox/4.0";
 //        wv_webview.getSettings().setUserAgentString(newUA);
-        String linkss = "http://projecting.ingenious-technologies.com/finance_app/login?username=" + username + "&password=" + password + "";
+        String linkss = "http://finance.ingenious-technologies.com/login?username=" + username + "&password=" + password + "";
 //        Log.d("webviewtest", m2);
 
         wv_webview.setVisibility(View.INVISIBLE);
@@ -289,6 +287,7 @@ public class WebActivity extends AppCompatActivity implements ConnectivityReceiv
         getMenuInflater().inflate(R.menu.close_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -299,26 +298,26 @@ public class WebActivity extends AppCompatActivity implements ConnectivityReceiv
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent intent){
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
-        if(Build.VERSION.SDK_INT >= 21){
+        if (Build.VERSION.SDK_INT >= 21) {
             Uri[] results = null;
             //checking if response is positive
-            if(resultCode== Activity.RESULT_OK){
-                if(requestCode == FCR){
-                    if(null == mUMA){
+            if (resultCode == Activity.RESULT_OK) {
+                if (requestCode == FCR) {
+                    if (null == mUMA) {
                         return;
                     }
-                    if(intent == null || intent.getData() == null){
-                        if(mCM != null){
+                    if (intent == null || intent.getData() == null) {
+                        if (mCM != null) {
                             results = new Uri[]{Uri.parse(mCM)};
                         }
-                    }else{
+                    } else {
                         String dataString = intent.getDataString();
-                        if(dataString != null){
+                        if (dataString != null) {
                             results = new Uri[]{Uri.parse(dataString)};
                         } else {
-                            if(multiple_files) {
+                            if (multiple_files) {
                                 if (intent.getClipData() != null) {
                                     final int numSelectedFiles = intent.getClipData().getItemCount();
                                     results = new Uri[numSelectedFiles];
@@ -333,16 +332,17 @@ public class WebActivity extends AppCompatActivity implements ConnectivityReceiv
             }
             mUMA.onReceiveValue(results);
             mUMA = null;
-        }else{
-            if(requestCode == FCR){
-                if(null == mUM) return;
+        } else {
+            if (requestCode == FCR) {
+                if (null == mUM) return;
                 Uri result = intent == null || resultCode != RESULT_OK ? null : intent.getData();
                 mUM.onReceiveValue(result);
                 mUM = null;
             }
         }
     }
-//todo for real finger print auth but not here
+
+    //todo for real finger print auth but not here
 //    public void checkfinger() {
 //        try {
 //            dialogBuilder = new FingerprintDialogBuilder(WebActivity.this)
@@ -358,7 +358,7 @@ public class WebActivity extends AppCompatActivity implements ConnectivityReceiv
 //            m.printStackTrace();
 //        }
 //    }
-    public void checkdisplay(){
+    public void checkdisplay() {
         final AlertDialog alertDialog = new AlertDialog.Builder(WebActivity.this).setTitle("Verification").create();
 
         alertDialog.show();
@@ -366,11 +366,11 @@ public class WebActivity extends AppCompatActivity implements ConnectivityReceiv
         win.setContentView(R.layout.new_layout);
 
         //Game
-        ImageButton game_btn = (ImageButton)win.findViewById(R.id.finger);
-        game_btn.setOnClickListener(new View.OnClickListener(){
+        ImageButton game_btn = (ImageButton) win.findViewById(R.id.finger);
+        game_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getApplicationContext(),"Customer Verified",Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Customer Verified", Toast.LENGTH_LONG).show();
                 alertDialog.dismiss();
                 verify();
 
@@ -519,7 +519,7 @@ public class WebActivity extends AppCompatActivity implements ConnectivityReceiv
     }
 
     public void dowork(double lat, double lon) {
-        Call<TrackRes> call = apiInterface.performverify(sharedpreferences.getInt(Uid, 0),muserid, lat, lon);
+        Call<TrackRes> call = apiInterface.performverify(sharedpreferences.getInt(Uid, 0), muserid, lat, lon);
         call.enqueue(new Callback<TrackRes>() {
             @Override
             public void onResponse(Call<TrackRes> call, Response<TrackRes> response) {
@@ -547,18 +547,18 @@ public class WebActivity extends AppCompatActivity implements ConnectivityReceiv
     }
 
     //creating new image file here
-    private File createImageFile() throws IOException{
+    private File createImageFile() throws IOException {
         @SuppressLint("SimpleDateFormat") String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "img_"+timeStamp+"_";
+        String imageFileName = "img_" + timeStamp + "_";
         File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-        return File.createTempFile(imageFileName,".jpg",storageDir);
+        return File.createTempFile(imageFileName, ".jpg", storageDir);
     }
 
-    public boolean file_permission(){
-        if(Build.VERSION.SDK_INT >=23 && (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)) {
+    public boolean file_permission() {
+        if (Build.VERSION.SDK_INT >= 23 && (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)) {
             ActivityCompat.requestPermissions(WebActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA}, 1);
             return false;
-        }else{
+        } else {
             return true;
         }
     }
