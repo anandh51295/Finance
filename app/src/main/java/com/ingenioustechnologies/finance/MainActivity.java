@@ -184,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
                 if (!username.isEmpty()) {
                     intent.putExtra("username", username);
                     intent.putExtra("password", password);
-                    intent.putExtra("url", "dues2");
+                    intent.putExtra("url", "loans2");
                 }
                 startActivity(intent);
             }
@@ -196,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
                 if (!username.isEmpty()) {
                     intent.putExtra("username", username);
                     intent.putExtra("password", password);
-                    intent.putExtra("url", "loans2");
+                    intent.putExtra("url", "dues2");
                 }
                 startActivity(intent);
             }
