@@ -86,7 +86,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             if(k==rsize-1){
 //                            mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
                                 LatLng sydney = new LatLng(Double.parseDouble(response.body().getResponse().get(k).getLatitude()), Double.parseDouble(response.body().getResponse().get(k).getLongitude()));
-                                mMap.addMarker(new MarkerOptions().position(sydney).title(response.body().getResponse().get(k).getDate()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
+                                mMap.addMarker(new MarkerOptions().position(sydney).title(response.body().getResponse().get(k).getDate()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
                             mMap.moveCamera(CameraUpdateFactory.newLatLng(erode));
                             }else{
                                 LatLng sydney = new LatLng(Double.parseDouble(response.body().getResponse().get(k).getLatitude()), Double.parseDouble(response.body().getResponse().get(k).getLongitude()));

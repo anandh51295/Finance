@@ -81,7 +81,7 @@ public class NmapsActivity extends FragmentActivity implements OnMapReadyCallbac
 
                             if(k==rsize-1){
                                 LatLng sydney = new LatLng(Double.parseDouble(response.body().getResponse().get(k).getLatitude()), Double.parseDouble(response.body().getResponse().get(k).getLongitude()));
-                                mMap.addMarker(new MarkerOptions().position(sydney).title(response.body().getResponse().get(k).getBorrower_name()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
+                                mMap.addMarker(new MarkerOptions().position(sydney).title(response.body().getResponse().get(k).getBorrower_name()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
                                 mMap.moveCamera(CameraUpdateFactory.newLatLng(erode));
 //                            mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
                             }else{
