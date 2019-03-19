@@ -10,6 +10,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.ingenioustechnologies.finance.api.ApiClient;
@@ -76,12 +77,18 @@ public class NmapsActivity extends FragmentActivity implements OnMapReadyCallbac
 
                         LatLng erode = new LatLng(11.341000, 77.717200);
                         for (int k = 0; k < rsize; k++) {
-                            LatLng sydney = new LatLng(Double.parseDouble(response.body().getResponse().get(k).getLatitude()), Double.parseDouble(response.body().getResponse().get(k).getLongitude()));
-                            mMap.addMarker(new MarkerOptions().position(sydney).title(response.body().getResponse().get(k).getBorrower_name()));
-//                            if(k==rsize-1){
+
+
+                            if(k==rsize-1){
+                                LatLng sydney = new LatLng(Double.parseDouble(response.body().getResponse().get(k).getLatitude()), Double.parseDouble(response.body().getResponse().get(k).getLongitude()));
+                                mMap.addMarker(new MarkerOptions().position(sydney).title(response.body().getResponse().get(k).getBorrower_name()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
+                                mMap.moveCamera(CameraUpdateFactory.newLatLng(erode));
 //                            mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-//                            }
-                            mMap.moveCamera(CameraUpdateFactory.newLatLng(erode));
+                            }else{
+                                LatLng sydney = new LatLng(Double.parseDouble(response.body().getResponse().get(k).getLatitude()), Double.parseDouble(response.body().getResponse().get(k).getLongitude()));
+                                mMap.addMarker(new MarkerOptions().position(sydney).title(response.body().getResponse().get(k).getBorrower_name()));
+                            }
+//                            mMap.moveCamera(CameraUpdateFactory.newLatLng(erode));
                         }
                     } else {
                         Toast.makeText(getApplicationContext(), "No Data Found", Toast.LENGTH_LONG).show();
@@ -96,7 +103,7 @@ public class NmapsActivity extends FragmentActivity implements OnMapReadyCallbac
             @Override
             public void onFailure(Call<CheckRes> call, Throwable t) {
                 t.printStackTrace();
-                Toast.makeText(getApplicationContext(), "Check Your Internet Connection", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "No Location Data Found...!", Toast.LENGTH_LONG).show();
             }
         });
     }

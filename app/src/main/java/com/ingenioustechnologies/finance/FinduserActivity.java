@@ -100,7 +100,7 @@ public class FinduserActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<CustomerRes> call, Throwable t) {
                 t.printStackTrace();
-                Toast.makeText(getApplicationContext(), "Check Your Internet Connection", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "No Verified Customers Found...!", Toast.LENGTH_LONG).show();
             }
         });
     }
