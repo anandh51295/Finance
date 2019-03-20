@@ -235,7 +235,7 @@ public class MainActivity extends AppCompatActivity {
 //                startService(i2);
                 locationTracker = new LocationTracker("my.action")
 //                        .setInterval(50000)
-                        .setInterval(300000)
+                        .setInterval(60000)
                         .setGps(true)
                         .setNetWork(false)
 

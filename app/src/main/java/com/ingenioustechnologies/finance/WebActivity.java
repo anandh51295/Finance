@@ -359,7 +359,7 @@ public class WebActivity extends AppCompatActivity implements ConnectivityReceiv
 //        }
 //    }
     public void checkdisplay() {
-        final AlertDialog alertDialog = new AlertDialog.Builder(WebActivity.this).setTitle("Verification").create();
+        final AlertDialog alertDialog = new AlertDialog.Builder(WebActivity.this).setTitle("Verification").setCancelable(false).create();
 
         alertDialog.show();
         Window win = alertDialog.getWindow();
