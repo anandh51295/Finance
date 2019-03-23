@@ -1,11 +1,16 @@
 package com.ingenioustechnologies.finance;
 
+import android.Manifest;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
@@ -14,10 +19,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.ingenioustechnologies.finance.service.LocationService;
 
 import br.com.safety.locationlistenerhelper.core.LocationTracker;
 
 public class MainActivity extends AppCompatActivity {
+
 
     CardView cardView1, cardView2, cardView3, cardView4, cardView5, cardView6, cardView7,cardView8,cardView9,cardView10,cardView11;
     TextView textView;
@@ -29,13 +38,15 @@ public class MainActivity extends AppCompatActivity {
     public static final String Userrole = "userroleKey";
     public static final String mypreference = "financesharedpref";
     LocationTracker locationTracker;
-    private final int REQUEST_LOCATION_PERMISSION = 1;
+//    private final int REQUEST_LOCATION_PERMISSION = 1;
+    public static final int PERMISSIONS_REQUEST_CODE = 0;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         setTitle("Dashboard");
         sharedpreferences = getSharedPreferences(mypreference,
                 Context.MODE_PRIVATE);
@@ -202,7 +213,31 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+
     }
+
+    private void checkPermissionsAndOpenFilePicker() {
+        String permission = Manifest.permission.ACCESS_COARSE_LOCATION;
+
+        if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
+                showError();
+            } else {
+                ActivityCompat.requestPermissions(this, new String[]{permission}, PERMISSIONS_REQUEST_CODE);
+            }
+        } else {
+            if(!isServiceRunning(LocationService.class)){
+                startService(new Intent(this,LocationService.class));
+            }
+        }
+    }
+
+    private void showError() {
+        Toast.makeText(this, "Allow Location Permission", Toast.LENGTH_SHORT).show();
+    }
+
+
 
 
 //    @Override
@@ -229,47 +264,42 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 //        requestLocationPermission();
+
         if (sharedpreferences.contains(Userrole)) {
             if (sharedpreferences.getString(Userrole, null).equals("user")) {
-//                Intent i2 = new Intent(getApplicationContext(), LocationService.class);
-//                startService(i2);
-                locationTracker = new LocationTracker("my.action")
-//                        .setInterval(50000)
-                        .setInterval(60000)
-                        .setGps(true)
-                        .setNetWork(false)
-
-                        // IF YOU WANT JUST CURRENT LOCATION
-                        // .currentLocation(new CurrentLocationReceiver(new CurrentLocationListener() {
-                        //
-                        //            @Override
-                        //            public void onCurrentLocation(Location location) {
-                        //               Log.d("callback", ":onCurrentLocation" + location.getLongitude());
-                        //               locationTracker.stopLocationService(getBaseContext());
-                        //            }
-                        //
-                        //            @Override
-                        //            public void onPermissionDiened() {
-                        //                Log.d("callback", ":onPermissionDiened");
-                        //                locationTracker.stopLocationService(getBaseContext());
-                        //            }
-                        // }))
-
-
-                        .start(getBaseContext(), this);
-
-                // IF YOU WANT RUN IN SERVICE
-//                        .start(this);
+                checkPermissionsAndOpenFilePicker();
             } else {
                 Log.d("role", "admin");
             }
         }
+    }
 
+    public boolean isServiceRunning(Class serviceClass){
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        locationTracker.onRequestPermission(requestCode, permissions, grantResults);
+
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_CODE: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                    locationTracker.onRequestPermission(requestCode, permissions, grantResults);
+                    if(!isServiceRunning(LocationService.class)){
+                        startService(new Intent(this,LocationService.class));
+                    }
+                } else {
+                    showError();
+                }
+            }
+        }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
@@ -278,7 +308,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         try {
-            locationTracker.stopLocationService(this);
+//            locationTracker.stopLocationService(this);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -310,6 +340,8 @@ public class MainActivity extends AppCompatActivity {
                                 SharedPreferences.Editor editor = sharedpreferences.edit();
                                 editor.clear();
                                 editor.commit();
+                                Intent myService = new Intent(MainActivity.this, LocationService.class);
+                                stopService(myService);
                                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                                 startActivity(intent);
                                 finish();

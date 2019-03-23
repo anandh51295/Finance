@@ -22,6 +22,9 @@ public interface ApiInterface {
     @GET("tracker")
     Call<TrackRes> performtrack(@Query("userid") int userid, @Query("latitude") double latitude,@Query("longitude") double longitude);
 
+    @GET("tracker")
+    Call<TrackRes> performstrack(@Query("userid") int userid, @Query("latitude") String latitude,@Query("longitude") String longitude);
+
     @GET("userverify")
     Call<TrackRes> performverify(@Query("userid") int userid,@Query("cname")String cname,@Query("latitude") double latitude,@Query("longtitude") double longtitude);
 

@@ -493,7 +493,7 @@ public class WebActivity extends AppCompatActivity implements ConnectivityReceiv
     public void verify() {
         locationTracker = new LocationTracker("my.action")
 //                        .setInterval(50000)
-                .setInterval(50000)
+//                .setInterval(50000)
                 .setGps(true)
                 .setNetWork(false)
 
