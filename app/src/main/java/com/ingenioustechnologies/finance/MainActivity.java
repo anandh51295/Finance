@@ -5,8 +5,10 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -21,14 +23,13 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.ingenioustechnologies.finance.service.LocationService;
-
-import br.com.safety.locationlistenerhelper.core.LocationTracker;
+import com.ingenioustechnologies.finance.needs.LocationNeeds;
 
 public class MainActivity extends AppCompatActivity {
+    private LocationReceiver locationReceiver = null;
 
-
-    CardView cardView1, cardView2, cardView3, cardView4, cardView5, cardView6, cardView7,cardView8,cardView9,cardView10,cardView11;
+//    private LocationTracker locationTracker;
+    CardView cardView1, cardView2, cardView3, cardView4, cardView5, cardView6, cardView7, cardView8, cardView9, cardView10, cardView11;
     TextView textView;
     String username, password;
     SharedPreferences sharedpreferences;
@@ -37,8 +38,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String Uid = "useridKey";
     public static final String Userrole = "userroleKey";
     public static final String mypreference = "financesharedpref";
-    LocationTracker locationTracker;
-//    private final int REQUEST_LOCATION_PERMISSION = 1;
+
     public static final int PERMISSIONS_REQUEST_CODE = 0;
 
 
@@ -57,11 +57,26 @@ public class MainActivity extends AppCompatActivity {
         cardView5 = findViewById(R.id.vduescard);
         cardView6 = findViewById(R.id.usercard);
         cardView7 = findViewById(R.id.ucard);
-        cardView8=findViewById(R.id.ccard);
+        cardView8 = findViewById(R.id.ccard);
         textView = findViewById(R.id.welcometxt);
-        cardView9=findViewById(R.id.ndeletecard);
-        cardView10=findViewById(R.id.nloancard);
-        cardView11=findViewById(R.id.weekdue);
+        cardView9 = findViewById(R.id.ndeletecard);
+        cardView10 = findViewById(R.id.nloancard);
+        cardView11 = findViewById(R.id.weekdue);
+
+        IntentFilter intentFilter = new IntentFilter();
+
+
+        // Set broadcast receiver priority.
+        intentFilter.setPriority(100);
+
+        // Create a network change broadcast receiver.
+        locationReceiver = new LocationReceiver();
+
+        // Register the broadcast receiver with the intent filter object.
+        registerReceiver(locationReceiver, intentFilter);
+
+        Log.d("receiver", "onCreate: screenOnOffReceiver is registered.");
+
 
 
         if (sharedpreferences.contains(Name) && sharedpreferences.contains(PWD) && sharedpreferences.contains(Uid) && sharedpreferences.contains(Userrole)) {
@@ -170,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
         cardView8.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(MainActivity.this,FinduserActivity.class);
+                Intent intent = new Intent(MainActivity.this, FinduserActivity.class);
                 startActivity(intent);
             }
         });
@@ -214,8 +229,14 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-
     }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
 
     private void checkPermissionsAndOpenFilePicker() {
         String permission = Manifest.permission.ACCESS_COARSE_LOCATION;
@@ -227,37 +248,33 @@ public class MainActivity extends AppCompatActivity {
                 ActivityCompat.requestPermissions(this, new String[]{permission}, PERMISSIONS_REQUEST_CODE);
             }
         } else {
-            if(!isServiceRunning(LocationService.class)){
-                startService(new Intent(this,LocationService.class));
+            domain();
+        }
+    }
+    public void domain(){
+        if (sharedpreferences.contains(Userrole)) {
+            if (sharedpreferences.getString(Userrole, null).equals("user")) {
+//                locationTracker = new LocationTracker("my.action")
+//                        .setInterval(60000)
+//                        .setGps(true)
+//                        .setNetWork(false)
+//                        .start(getBaseContext());
+                if (!isServiceRunning(LocationNeeds.class)) {
+//                    startService(new Intent(this, LocationNeeds.class));
+                    Intent intent = new Intent(MainActivity.this, LocationNeeds.class);
+                    intent.setAction(LocationNeeds.ACTION_START_FOREGROUND_SERVICE);
+                    startService(intent);
+                }
+
+            } else {
+                Log.d("role", "admin");
             }
         }
     }
-
     private void showError() {
         Toast.makeText(this, "Allow Location Permission", Toast.LENGTH_SHORT).show();
     }
 
-
-
-
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//
-//        // Forward results to EasyPermissions
-//        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
-//    }
-//
-//    @AfterPermissionGranted(REQUEST_LOCATION_PERMISSION)
-//    public void requestLocationPermission() {
-//        String[] perms = {Manifest.permission.ACCESS_FINE_LOCATION};
-//        if(EasyPermissions.hasPermissions(this, perms)) {
-//            //Toast.makeText(this, "Permission already granted", Toast.LENGTH_SHORT).show();
-//        }
-//        else {
-//            EasyPermissions.requestPermissions(this, "Please grant the location permission", REQUEST_LOCATION_PERMISSION, perms);
-//        }
-//    }
 
 
     @Override
@@ -274,7 +291,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public boolean isServiceRunning(Class serviceClass){
+    public boolean isServiceRunning(Class serviceClass) {
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
             if (serviceClass.getName().equals(service.service.getClassName())) {
@@ -284,6 +301,7 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
@@ -291,10 +309,8 @@ public class MainActivity extends AppCompatActivity {
             case PERMISSIONS_REQUEST_CODE: {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    domain();
 //                    locationTracker.onRequestPermission(requestCode, permissions, grantResults);
-                    if(!isServiceRunning(LocationService.class)){
-                        startService(new Intent(this,LocationService.class));
-                    }
                 } else {
                     showError();
                 }
@@ -308,7 +324,20 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         try {
+//            Intent myService = new Intent(MainActivity.this, LocationNeeds.class);
+//            stopService(myService);
+
+            Intent intent = new Intent(MainActivity.this, LocationNeeds.class);
+            intent.setAction(LocationNeeds.ACTION_STOP_FOREGROUND_SERVICE);
+            startService(intent);
+
+            if(locationReceiver!=null)
+            {
+                unregisterReceiver(locationReceiver);
+                Log.d("receiver", "onDestroy: screenOnOffReceiver is unregistered.");
+            }
 //            locationTracker.stopLocationService(this);
+            Log.d("finance","Destroy");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -318,9 +347,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.logout_menu, menu);
-//        MenuItem shareItem = menu.findItem(R.id.check_out);
-//                shareItem.setVisible(false);
-
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -340,10 +366,8 @@ public class MainActivity extends AppCompatActivity {
                                 SharedPreferences.Editor editor = sharedpreferences.edit();
                                 editor.clear();
                                 editor.commit();
-                                Intent myService = new Intent(MainActivity.this, LocationService.class);
-                                stopService(myService);
-                                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                                startActivity(intent);
+//                                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+//                                startActivity(intent);
                                 finish();
                             } catch (Exception er) {
                                 er.printStackTrace();
@@ -355,4 +379,26 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public void onBackPressed() {
+        new AlertDialog.Builder(this)
+                .setMessage("Are you sure you want to exit?")
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        try {
+                            MainActivity.this.finish();
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                                finishAffinity();
+                            }
+                        } catch (Exception er) {
+                            er.printStackTrace();
+                        }
+                    }
+                })
+                .setNegativeButton("No", null)
+                .show();
+    }
+
 }

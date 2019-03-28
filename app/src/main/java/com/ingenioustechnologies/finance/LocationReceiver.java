@@ -1,4 +1,4 @@
-package com.ingenioustechnologies.finance.support;
+package com.ingenioustechnologies.finance;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -24,29 +24,26 @@ public class LocationReceiver extends BroadcastReceiver {
     public static final String Uid = "useridKey";
     public static final String Userrole = "userroleKey";
     public static final String mypreference = "financesharedpref";
-
+    //todo this page might not need
     @Override
     public void onReceive(Context context, Intent intent) {
-        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        sharedpreferences = context.getSharedPreferences(mypreference,
-                Context.MODE_PRIVATE);
-
         if (null != intent && intent.getAction().equals("my.action")) {
             Location locationData = (Location) intent.getParcelableExtra(SettingsLocationTracker.LOCATION_MESSAGE);
-            Log.d("Location: ", "Latitude: " + locationData.getLatitude() + "Longitude:" + locationData.getLongitude());
+            Log.d("LocationR: ", "Latitude: " + locationData.getLatitude() + "Longitude:" + locationData.getLongitude());
             //send your call to api or do any things with the of location data
-            if (sharedpreferences.contains(Uid) && sharedpreferences.contains(Userrole)) {
-                sendtrack(sharedpreferences.getInt(Uid, 0),locationData.getLatitude(),locationData.getLongitude());
-
-            } else {
-                Log.d("tracking", "no data in storage");
+            apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+            sharedpreferences = context.getSharedPreferences(mypreference,
+                    Context.MODE_PRIVATE);
+            if(sharedpreferences.contains(Userrole)){
+                if(!sharedpreferences.getString(Userrole,null).equals("admin")){
+                    sendtrack(sharedpreferences.getInt(Uid, 0),locationData.getLatitude(),locationData.getLongitude());
+                }
             }
-
 
         }
     }
 
-    public void sendtrack(int userid, double latitude, double longitude) {
+    public void sendtrack(int userid, Double latitude, Double longitude) {
         Call<TrackRes> call = apiInterface.performtrack(userid, latitude, longitude);
         call.enqueue(new Callback<TrackRes>() {
             @Override
@@ -55,13 +52,13 @@ public class LocationReceiver extends BroadcastReceiver {
                 if (response.isSuccessful()) {
                     try {
 
-                            if (response.body().getResponse().equals("inserted")) {
-                                Log.d("tracking", " inserted");
-                            } else if (response.body().getResponse().equals("not inserted")) {
-                                Log.d("tracking", "not inserted");
-                            } else {
-                                Log.d("tracking", "not working");
-                            }
+                        if (response.body().getResponse().equals("inserted")) {
+                            Log.d("tracking", " inserted");
+                        } else if (response.body().getResponse().equals("not inserted")) {
+                            Log.d("tracking", "not inserted");
+                        } else {
+                            Log.d("tracking", "not working");
+                        }
 
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -79,4 +76,5 @@ public class LocationReceiver extends BroadcastReceiver {
             }
         });
     }
+
 }

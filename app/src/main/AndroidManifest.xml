@@ -14,7 +14,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA"/>
-
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:allowBackup="true"
@@ -58,9 +58,7 @@
             android:label="@string/title_activity_maps" />
         <activity android:name=".UserlocActivity" />
 
-        <service
-            android:name=".service.LocationService"
-            android:enabled="true" />
+
 
         <activity
             android:name=".WebActivity"
@@ -77,17 +75,18 @@
         </activity>
         <activity android:name=".MainActivity" />
 
-        <receiver android:name=".support.LocationReceiver">
+
+        <receiver android:name=".LocationReceiver"
+            android:enabled="true"
+            android:exported="true">
             <intent-filter>
-                <action android:name="my.action" />
+                <action android:name="my.action"/>
             </intent-filter>
         </receiver>
-        <receiver android:name=".receivers.GpsStateReceiver">
-            <intent-filter>
-                <action android:name="android.location.PROVIDERS_CHANGED" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </receiver>
+        <service
+            android:name=".needs.LocationNeeds"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>
