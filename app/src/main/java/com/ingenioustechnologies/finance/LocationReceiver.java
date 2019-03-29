@@ -43,7 +43,7 @@ public class LocationReceiver extends BroadcastReceiver {
         }
     }
 
-    public void sendtrack(int userid, Double latitude, Double longitude) {
+    public void sendtrack(int userid, double latitude, double longitude) {
         Call<TrackRes> call = apiInterface.performtrack(userid, latitude, longitude);
         call.enqueue(new Callback<TrackRes>() {
             @Override

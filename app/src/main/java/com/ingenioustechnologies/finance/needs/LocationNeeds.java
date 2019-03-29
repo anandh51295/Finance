@@ -187,6 +187,7 @@ public class LocationNeeds extends Service implements GoogleApiClient.Connection
                 LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
             }
         } catch (SecurityException ex) {
+            ex.printStackTrace();
         }
     }
 
@@ -304,7 +305,7 @@ public class LocationNeeds extends Service implements GoogleApiClient.Connection
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
-    public void sendtrack(int userid, Double latitude, Double longitude) {
+    public void sendtrack(int userid, double latitude, double longitude) {
         Call<TrackRes> call = apiInterface.performtrack(userid, latitude, longitude);
         call.enqueue(new Callback<TrackRes>() {
             @Override
