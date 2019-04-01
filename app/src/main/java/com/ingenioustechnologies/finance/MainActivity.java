@@ -239,7 +239,13 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void checkPermissionsAndOpenFilePicker() {
-        String permission = Manifest.permission.ACCESS_COARSE_LOCATION;
+        String permission;
+        //todo support for 8.0 and above added with below methods
+        if (Build.VERSION.SDK_INT >= 26) {
+            permission = Manifest.permission.ACCESS_FINE_LOCATION;
+        }else{
+            permission = Manifest.permission.ACCESS_COARSE_LOCATION;
+        }
 
         if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {

@@ -194,7 +194,8 @@ public class LocationNeeds extends Service implements GoogleApiClient.Connection
     private void updateService() {
         if (null != mCurrentLocation) {
             sendLocationBroadcast(this.mCurrentLocation);
-            sendCurrentLocationBroadCast(this.mCurrentLocation);
+            //todo the below method was same as the above so its not used
+//            sendCurrentLocationBroadCast(this.mCurrentLocation);
             Log.d("myInfo: ", "send broadcast location data");
         } else {
             sendPermissionDeinedBroadCast();
