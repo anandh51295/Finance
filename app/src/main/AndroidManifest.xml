@@ -13,7 +13,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
@@ -39,8 +39,11 @@
             android:value="@string/google_maps_key" />
 
         <activity
+            android:name=".CurrentlocationActivity"
+            android:label="@string/title_activity_currentlocation"></activity>
+        <activity
             android:name=".NmapsActivity"
-            android:label="@string/title_activity_nmaps"></activity>
+            android:label="@string/title_activity_nmaps" />
         <activity android:name=".FinduserActivity" />
         <activity android:name=".ReportActivity" />
         <!--
@@ -59,13 +62,9 @@
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps" />
         <activity android:name=".UserlocActivity" />
-
-
-
         <activity
             android:name=".WebActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            />
+            android:configChanges="keyboardHidden|orientation|screenSize" />
         <activity
             android:name=".LoginActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -77,19 +76,19 @@
         </activity>
         <activity android:name=".MainActivity" />
 
-
-        <receiver android:name=".LocationReceiver"
+        <receiver
+            android:name=".LocationReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="my.action"/>
+                <action android:name="my.action" />
             </intent-filter>
         </receiver>
+
         <service
             android:name=".needs.LocationNeeds"
             android:enabled="true"
-            android:exported="true"></service>
-
+            android:exported="true" />
     </application>
 
 </manifest>

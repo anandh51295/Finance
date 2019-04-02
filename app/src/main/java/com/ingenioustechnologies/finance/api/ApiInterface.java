@@ -39,4 +39,7 @@ public interface ApiInterface {
 
     @GET("usertracker")
     Call<LocRes> performlocation(@Query("userid") int userid,@Query("type") String type,@Query("sdate") String sdate,@Query("edate") String edate);
+
+    @GET("currenttracker")
+    Call<LocRes> performcurrentlocation(@Query("userid") int userid);
 }

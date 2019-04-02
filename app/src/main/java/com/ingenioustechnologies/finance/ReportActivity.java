@@ -19,7 +19,7 @@ public class ReportActivity extends AppCompatActivity {
 
     Spinner spinner;
     TextView sdate,edate,heading;
-    Button btn;
+    Button btn,cbtn;
     String username;
     int userid;
     String ed,sd,sel_txt;
@@ -41,6 +41,7 @@ public class ReportActivity extends AppCompatActivity {
         edate=findViewById(R.id.end_txt);
         btn=findViewById(R.id.s_btn);
         heading=findViewById(R.id.r_head);
+        cbtn=findViewById(R.id.btn_cur);
         uname=new ArrayList<>();
         uname.add("all");
         uname.add("UserTracking");
@@ -110,6 +111,14 @@ public class ReportActivity extends AppCompatActivity {
                 intent.putExtra("type",sel_txt);
                 intent.putExtra("sdate",sd);
                 intent.putExtra("edate",ed);
+                intent.putExtra("userid",userid);
+                startActivity(intent);
+            }
+        });
+        cbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent= new Intent(ReportActivity.this,CurrentlocationActivity.class);
                 intent.putExtra("userid",userid);
                 startActivity(intent);
             }

@@ -4,4 +4,5 @@
     <string name="fingerprint_title">Verification</string>
     <string name="fingerprint_message">Please Place Your Index Finger In Fingerprint Scanner</string>
     <string name="title_activity_nmaps">Map</string>
+    <string name="title_activity_currentlocation">Map</string>
 </resources>

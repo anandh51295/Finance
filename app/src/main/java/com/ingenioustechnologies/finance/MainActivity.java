@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
         if (sharedpreferences.getString(Userrole, null).equals("user")) {
             cardView6.setVisibility(View.GONE);
             cardView7.setVisibility(View.GONE);
-            cardView8.setVisibility(View.GONE);
+//            cardView8.setVisibility(View.GONE);
             cardView10.setVisibility(View.GONE);
         }
         cardView1.setOnClickListener(new View.OnClickListener() {
