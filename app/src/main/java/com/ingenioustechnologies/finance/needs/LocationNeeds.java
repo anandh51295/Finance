@@ -66,6 +66,7 @@ public class LocationNeeds extends Service implements GoogleApiClient.Connection
     @Override
     public void onCreate() {
         super.onCreate();
+        Log.d("service","Started");
 
 //        try {
 //            powerManager = (PowerManager) getSystemService(POWER_SERVICE);
@@ -131,7 +132,7 @@ public class LocationNeeds extends Service implements GoogleApiClient.Connection
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        sharedpreferences = getApplicationContext().getSharedPreferences(mypreference,
+        sharedpreferences = getBaseContext().getSharedPreferences(mypreference,
                 Context.MODE_PRIVATE);
         gps = true;
         netWork = true;
@@ -149,15 +150,19 @@ public class LocationNeeds extends Service implements GoogleApiClient.Connection
             switch (action) {
                 case ACTION_START_FOREGROUND_SERVICE:
                     startForegroundService();
-                    Toast.makeText(getApplicationContext(), "Finance service is started.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getBaseContext(), "Finance service is started.", Toast.LENGTH_LONG).show();
                     break;
                 case ACTION_STOP_FOREGROUND_SERVICE:
                     stopForegroundService();
-                    Toast.makeText(getApplicationContext(), "Finance service is stopped.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getBaseContext(), "Finance service is stopped.", Toast.LENGTH_LONG).show();
                     break;
+                default:
+                    Log.d("service","default works");
             }
+        }else{
+            Log.d("restart","no intent");
         }
-        return START_STICKY;
+        return START_REDELIVER_INTENT;
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -270,6 +275,7 @@ public class LocationNeeds extends Service implements GoogleApiClient.Connection
         } catch (Exception r) {
             r.printStackTrace();
         }
+        Log.d("Service","Stopped");
 //        wakeLock.release();
         super.onDestroy();
     }
@@ -339,5 +345,7 @@ public class LocationNeeds extends Service implements GoogleApiClient.Connection
             }
         });
     }
+
+
 
 }

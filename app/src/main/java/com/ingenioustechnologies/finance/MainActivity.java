@@ -28,7 +28,7 @@ import com.ingenioustechnologies.finance.needs.LocationNeeds;
 public class MainActivity extends AppCompatActivity {
     private LocationReceiver locationReceiver = null;
 
-//    private LocationTracker locationTracker;
+    //    private LocationTracker locationTracker;
     CardView cardView1, cardView2, cardView3, cardView4, cardView5, cardView6, cardView7, cardView8, cardView9, cardView10, cardView11;
     TextView textView;
     String username, password;
@@ -76,7 +76,6 @@ public class MainActivity extends AppCompatActivity {
         registerReceiver(locationReceiver, intentFilter);
 
         Log.d("receiver", "onCreate: screenOnOffReceiver is registered.");
-
 
 
         if (sharedpreferences.contains(Name) && sharedpreferences.contains(PWD) && sharedpreferences.contains(Uid) && sharedpreferences.contains(Userrole)) {
@@ -243,10 +242,9 @@ public class MainActivity extends AppCompatActivity {
         //todo support for 8.0 and above added with below methods
         if (Build.VERSION.SDK_INT >= 26) {
             permission = Manifest.permission.ACCESS_FINE_LOCATION;
-        }else{
+        } else {
             permission = Manifest.permission.ACCESS_COARSE_LOCATION;
         }
-
         if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
                 showError();
@@ -256,8 +254,11 @@ public class MainActivity extends AppCompatActivity {
         } else {
             domain();
         }
+
+
     }
-    public void domain(){
+
+    public void domain() {
         if (sharedpreferences.contains(Userrole)) {
             if (sharedpreferences.getString(Userrole, null).equals("user")) {
 //                locationTracker = new LocationTracker("my.action")
@@ -277,10 +278,10 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
     private void showError() {
         Toast.makeText(this, "Allow Location Permission", Toast.LENGTH_SHORT).show();
     }
-
 
 
     @Override
@@ -332,18 +333,15 @@ public class MainActivity extends AppCompatActivity {
         try {
 //            Intent myService = new Intent(MainActivity.this, LocationNeeds.class);
 //            stopService(myService);
-
-            Intent intent = new Intent(MainActivity.this, LocationNeeds.class);
-            intent.setAction(LocationNeeds.ACTION_STOP_FOREGROUND_SERVICE);
-            startService(intent);
-
-            if(locationReceiver!=null)
-            {
+//            Intent intent = new Intent(MainActivity.this, LocationNeeds.class);
+//            intent.setAction(LocationNeeds.ACTION_STOP_FOREGROUND_SERVICE);
+//            startService(intent);
+            if (locationReceiver != null) {
                 unregisterReceiver(locationReceiver);
                 Log.d("receiver", "onDestroy: screenOnOffReceiver is unregistered.");
             }
 //            locationTracker.stopLocationService(this);
-            Log.d("finance","Destroy");
+            Log.d("finance", "Destroy");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -371,10 +369,17 @@ public class MainActivity extends AppCompatActivity {
                                         Context.MODE_PRIVATE);
                                 SharedPreferences.Editor editor = sharedpreferences.edit();
                                 editor.clear();
-                                editor.commit();
+                                editor.apply();
 //                                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
 //                                startActivity(intent);
                                 finish();
+                                try {
+                                    Intent intent = new Intent(MainActivity.this, LocationNeeds.class);
+                                    intent.setAction(LocationNeeds.ACTION_STOP_FOREGROUND_SERVICE);
+                                    startService(intent);
+                                } catch (Exception r) {
+                                    r.printStackTrace();
+                                }
                             } catch (Exception er) {
                                 er.printStackTrace();
                             }
@@ -395,9 +400,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int id) {
                         try {
                             MainActivity.this.finish();
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                                finishAffinity();
-                            }
+                            finishAffinity();
                         } catch (Exception er) {
                             er.printStackTrace();
                         }
@@ -406,5 +409,4 @@ public class MainActivity extends AppCompatActivity {
                 .setNegativeButton("No", null)
                 .show();
     }
-
 }

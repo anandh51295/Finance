@@ -88,7 +88,9 @@
         <service
             android:name=".needs.LocationNeeds"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="true"
+            android:stopWithTask="false"
+            />
     </application>
 
 </manifest>
