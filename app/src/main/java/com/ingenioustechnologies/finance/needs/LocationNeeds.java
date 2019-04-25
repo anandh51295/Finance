@@ -14,6 +14,7 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.bosphere.filelogger.FL;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -66,7 +67,7 @@ public class LocationNeeds extends Service implements GoogleApiClient.Connection
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d("service","Started");
+        FL.d("service","Started");
 
 //        try {
 //            powerManager = (PowerManager) getSystemService(POWER_SERVICE);
@@ -81,7 +82,7 @@ public class LocationNeeds extends Service implements GoogleApiClient.Connection
 
     /* Used to build and start foreground service. */
     private void startForegroundService() {
-        Log.d(TAG_FOREGROUND_SERVICE, "Start foreground service.");
+        FL.d(TAG_FOREGROUND_SERVICE, "Start foreground service.");
 
         // Create notification default intent.
         Intent intent = new Intent();
@@ -114,7 +115,7 @@ public class LocationNeeds extends Service implements GoogleApiClient.Connection
     }
 
     private void stopForegroundService() {
-        Log.d(TAG_FOREGROUND_SERVICE, "Stop foreground service.");
+        FL.d(TAG_FOREGROUND_SERVICE, "Stop foreground service.");
 
         // Stop foreground service and remove the notification.
         stopForeground(true);
@@ -157,10 +158,10 @@ public class LocationNeeds extends Service implements GoogleApiClient.Connection
                     Toast.makeText(getBaseContext(), "Finance service is stopped.", Toast.LENGTH_LONG).show();
                     break;
                 default:
-                    Log.d("service","default works");
+                    FL.d("service","default works");
             }
         }else{
-            Log.d("restart","no intent");
+            FL.d("restart","no intent");
         }
         return START_REDELIVER_INTENT;
     }
@@ -201,10 +202,10 @@ public class LocationNeeds extends Service implements GoogleApiClient.Connection
             sendLocationBroadcast(this.mCurrentLocation);
             //todo the below method was same as the above so its not used
 //            sendCurrentLocationBroadCast(this.mCurrentLocation);
-            Log.d("myInfo: ", "send broadcast location data");
+            FL.d("myInfo: ", "send broadcast location data");
         } else {
             sendPermissionDeinedBroadCast();
-            Log.d("Error: ", "Permission deined");
+            FL.d("Error: ", "Permission deined");
         }
     }
 
@@ -213,7 +214,7 @@ public class LocationNeeds extends Service implements GoogleApiClient.Connection
 //        locationIntent.setAction(this.actionReceiver);
         //locationIntent.putExtra(SettingsLocationTracker.LOCATION_MESSAGE, sbLocationData);
 //        sendBroadcast(locationIntent);
-        Log.d("Location: ", "Latitude: " + sbLocationData.getLatitude() + "Longitude:" + sbLocationData.getLongitude());
+        FL.d("Location: ", "Latitude: " + sbLocationData.getLatitude() + "Longitude:" + sbLocationData.getLongitude());
         if (sharedpreferences.contains(Userrole)) {
             if (!sharedpreferences.getString(Userrole, null).equals("admin")) {
                 sendtrack(sharedpreferences.getInt(Uid, 0), sbLocationData.getLatitude(), sbLocationData.getLongitude());
@@ -222,7 +223,7 @@ public class LocationNeeds extends Service implements GoogleApiClient.Connection
     }
 
     private void sendCurrentLocationBroadCast(Location sbLocationData) {
-        Log.d("Location: ", "Latitude: " + sbLocationData.getLatitude() + "Longitude:" + sbLocationData.getLongitude());
+        FL.d("Location: ", "Latitude: " + sbLocationData.getLatitude() + "Longitude:" + sbLocationData.getLongitude());
         if (sharedpreferences.contains(Userrole)) {
             if (!sharedpreferences.getString(Userrole, null).equals("admin")) {
                 sendtrack(sharedpreferences.getInt(Uid, 0), sbLocationData.getLatitude(), sbLocationData.getLongitude());
@@ -275,7 +276,7 @@ public class LocationNeeds extends Service implements GoogleApiClient.Connection
         } catch (Exception r) {
             r.printStackTrace();
         }
-        Log.d("Service","Stopped");
+        FL.d("Service","Stopped");
 //        wakeLock.release();
         super.onDestroy();
     }
@@ -283,6 +284,7 @@ public class LocationNeeds extends Service implements GoogleApiClient.Connection
     @Override
     public void onConnected(Bundle connectionHint) throws SecurityException {
         Log.i(TAG, "Connected to GoogleApiClient");
+        FL.d(TAG, "Connected to GoogleApiClient");
         if (mCurrentLocation == null) {
             mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 //            Log.d("Location: ", "Latitude: " + mCurrentLocation.getLatitude() + "Longitude:" + mCurrentLocation.getLongitude());
@@ -305,6 +307,7 @@ public class LocationNeeds extends Service implements GoogleApiClient.Connection
     @Override
     public void onConnectionFailed(ConnectionResult result) {
         Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
+        FL.d(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
     }
 
     @Override
@@ -322,26 +325,26 @@ public class LocationNeeds extends Service implements GoogleApiClient.Connection
                     try {
 
                         if (response.body().getResponse().equals("inserted")) {
-                            Log.d("tracking", " inserted");
+                            FL.d("tracking", " inserted");
                         } else if (response.body().getResponse().equals("not inserted")) {
-                            Log.d("tracking", "not inserted");
+                            FL.d("tracking", "not inserted");
                         } else {
-                            Log.d("tracking", "not working");
+                            FL.d("tracking", "not working");
                         }
 
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 } else {
-                    Log.d("tracking", "no response");
-                    Log.d("check", String.valueOf(response.raw().body()));
+                    FL.d("tracking", "no response");
+                    FL.d("check", String.valueOf(response.raw().body()));
                 }
             }
 
             @Override
             public void onFailure(Call<TrackRes> call, Throwable t) {
                 t.printStackTrace();
-                Log.d("tracking", "check your internet connection");
+                FL.d("tracking", "check your internet connection");
             }
         });
     }

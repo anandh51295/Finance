@@ -1,10 +1,15 @@
 package com.ingenioustechnologies.finance;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -13,6 +18,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bosphere.filelogger.FL;
 import com.ingenioustechnologies.finance.api.ApiClient;
 import com.ingenioustechnologies.finance.api.ApiInterface;
 import com.ingenioustechnologies.finance.model.LoginRes;
@@ -30,6 +36,7 @@ public class LoginActivity extends AppCompatActivity {
     Button login_btn;
     String user, pass, key, userrole;
     int userid;
+    public static final int PERMISSIONS_REQUEST_CODE = 0;
     SharedPreferences sharedpreferences;
     public static final String Name = "nameKey";
     public static final String PWD = "passwordKey";
@@ -51,6 +58,11 @@ public class LoginActivity extends AppCompatActivity {
         apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         sharedpreferences = getSharedPreferences(mypreference,
                 Context.MODE_PRIVATE);
+        try {
+            checkPermissionsstorage();
+        } catch (Exception r) {
+            r.printStackTrace();
+        }
         try {
             if (!sharedpreferences.getString(Name, null).isEmpty() && !sharedpreferences.getString(PWD, null).isEmpty()) {
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
@@ -123,15 +135,55 @@ public class LoginActivity extends AppCompatActivity {
     public void save(String username, String password, int id, String role) {
         SharedPreferences.Editor editor = sharedpreferences.edit();
         if (Build.VERSION.SDK_INT >= 23) {
-            editor.putString(Vkey,"yes");
+            editor.putString(Vkey, "yes");
         } else {
-            editor.putString(Vkey,"no");
+            editor.putString(Vkey, "no");
         }
         editor.putString(Name, username);
         editor.putString(PWD, password);
         editor.putInt(Uid, id);
         editor.putString(Userrole, role);
         editor.commit();
+    }
+
+    private void checkPermissionsstorage() {
+        String permission;
+
+        permission = Manifest.permission.WRITE_EXTERNAL_STORAGE;
+
+        if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
+                showError();
+            } else {
+                ActivityCompat.requestPermissions(this, new String[]{permission}, PERMISSIONS_REQUEST_CODE);
+            }
+        } else {
+            FL.d("storage", "allowed");
+        }
+
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_CODE: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    FL.d("storage", "allowed");
+//                    locationTracker.onRequestPermission(requestCode, permissions, grantResults);
+                } else {
+                    showError();
+                }
+            }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    private void showError() {
+        Toast.makeText(this, "Allow Storage Permission", Toast.LENGTH_SHORT).show();
+        FL.d("storage", "not allowed");
     }
 
 }

@@ -23,6 +23,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bosphere.filelogger.FL;
 import com.ingenioustechnologies.finance.needs.LocationNeeds;
 
 public class MainActivity extends AppCompatActivity {
@@ -75,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
         // Register the broadcast receiver with the intent filter object.
         registerReceiver(locationReceiver, intentFilter);
 
-        Log.d("receiver", "onCreate: screenOnOffReceiver is registered.");
+        FL.d("receiver", "onCreate: screenOnOffReceiver is registered.");
 
 
         if (sharedpreferences.contains(Name) && sharedpreferences.contains(PWD) && sharedpreferences.contains(Uid) && sharedpreferences.contains(Userrole)) {
@@ -274,7 +275,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
             } else {
-                Log.d("role", "admin");
+                FL.d("role", "admin");
             }
         }
     }
@@ -293,7 +294,7 @@ public class MainActivity extends AppCompatActivity {
             if (sharedpreferences.getString(Userrole, null).equals("user")) {
                 checkPermissionsAndOpenFilePicker();
             } else {
-                Log.d("role", "admin");
+                FL.d("role", "admin");
             }
         }
     }
@@ -338,10 +339,10 @@ public class MainActivity extends AppCompatActivity {
 //            startService(intent);
             if (locationReceiver != null) {
                 unregisterReceiver(locationReceiver);
-                Log.d("receiver", "onDestroy: screenOnOffReceiver is unregistered.");
+                FL.d("receiver", "onDestroy: screenOnOffReceiver is unregistered.");
             }
 //            locationTracker.stopLocationService(this);
-            Log.d("finance", "Destroy");
+            FL.d("finance", "Destroy");
         } catch (Exception e) {
             e.printStackTrace();
         }
